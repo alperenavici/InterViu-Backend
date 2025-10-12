@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="IServices\" />
-      <Folder Include="Services\" />
+      <ProjectReference Include="..\Interviu.Core\Interviu.Core.csproj" />
+      <ProjectReference Include="..\Interviu.Data\Interviu.Data.csproj" />
     </ItemGroup>
 
 </Project>
