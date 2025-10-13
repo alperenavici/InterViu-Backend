@@ -1,23 +1,22 @@
 using Interviu.Core.DTOs; // Kendi DTO namespace'iniz
 using Interviu.Data.IRepositories;
 using Interviu.Service.IServices;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations; // IEnumerable için
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using AutoMapper;
 using Interviu.Entity.Entities;
 using Interviu.Service.Exceptions;
-using Microsoft.AspNetCore.Identity;
 
 namespace Interviu.Service.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
+            _mapper = mapper;
         }
 
         public async Task<UserDto> GetUserByIdAsync(string id)
@@ -27,16 +26,14 @@ namespace Interviu.Service.Services
             {
                 throw new EntityNotFoundException("ApplicationUser", id);
             }
-            return MapToUserDto(userEntity);
+            return _mapper.Map<UserDto>(userEntity);
         }
 
         public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
         {
             var userEntities = await _userRepository.GetAllUsersAsync();
-            return userEntities.Select(MapToUserDto);
+            return _mapper.Map<IEnumerable<UserDto>>(userEntities);
         }
-
-        
 
         public async Task<UserDto?> GetUserByEmailAsync(string email)
         {
@@ -45,7 +42,7 @@ namespace Interviu.Service.Services
             {
                 return null;
             }
-            return MapToUserDto(userEntity);
+            return _mapper.Map<UserDto>(userEntity);
         }
 
         public async Task<UserDto> RegisterUserAsync(RegisterDto dto)
@@ -56,13 +53,7 @@ namespace Interviu.Service.Services
                 throw new ValidationException("Bu e-posta adresi zaten kullanılıyor.");
             }
 
-            var newUserEntity = new ApplicationUser()
-            {
-                Email = dto.Email,
-                UserName = dto.UserName,
-                FirstName = dto.FirstName, 
-                LastName = dto.LastName,   
-            };
+            var newUserEntity = _mapper.Map<ApplicationUser>(dto);
 
             var identityResult = await _userRepository.CreateAsync(newUserEntity, dto.Password);
 
@@ -76,7 +67,7 @@ namespace Interviu.Service.Services
             
             await _userRepository.AddToRoleAsync(newUserEntity, "User");
             
-            return MapToUserDto(newUserEntity);
+            return _mapper.Map<UserDto>(newUserEntity);
         }
         
         public async Task AssignRoleToUserAsync(string userId, string roleName)
@@ -106,37 +97,13 @@ namespace Interviu.Service.Services
             var passwordIsValid = await _userRepository.CheckPasswordAsync(userEntity, dto.Password);
             if (!passwordIsValid) return (false, null);
             
-            return (true, MapToUserDto(userEntity));
+            return (true, _mapper.Map<UserDto>(userEntity));
         }
         
         public async Task<IEnumerable<UserWithCvDto>> GetUsersWithCvAsync()
         {
             var userEntities = await _userRepository.GetUsersWithCVsAsync();
-            return userEntities.Select(user => new UserWithCvDto()
-            {
-                Id = user.Id,
-                Email = user.Email,
-                UserName = user.UserName,
-                Cvs = user.Cvs?.Select(cv => new CvDto
-                {
-                    Id = cv.Id,
-                    FileName = cv.FileName,
-                    UploadDate = cv.UploadDate
-                }).ToList() ?? new List<CvDto>()
-            });
-        }
-        
-        
-        private UserDto MapToUserDto(ApplicationUser user)
-        {
-            return new UserDto
-            {
-                Id = user.Id,
-                Email = user.Email,
-                UserName = user.UserName,
-                FirstName = user.FirstName,
-                LastName = user.LastName
-            };
+            return _mapper.Map<IEnumerable<UserWithCvDto>>(userEntities);
         }
     }
 }
