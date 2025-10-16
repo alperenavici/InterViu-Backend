@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Interviu.Data.Context;
 using Interviu.Data.IRepositories;
 using Interviu.Data.Repositories;
@@ -26,6 +27,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICvService, CvService>();
 builder.Services.AddScoped<ICVRepository, CVRepository>();
+builder.Services.AddScoped<IQuestionService, QuestionService>();
+builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 // AutoMapper
 builder.Services.AddAutoMapper(cfg =>
 {
@@ -84,20 +87,22 @@ using (var scope = app.Services.CreateScope())
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+  
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+
 
 // CORS
 app.UseCors("AllowAll");
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+// Ana sayfa
+app.MapGet("/", () => Results.Text(@"
+INTERVIU API BAŞLATILDI          
+", "text/plain; charset=utf-16"));
 
 
 

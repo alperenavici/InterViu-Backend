@@ -41,49 +41,48 @@ public class CvService:ICvService
         return _mapper.Map<IEnumerable<CvDto>>(cvEntity);
     }
 
-        public async Task<CvDto> UploadAndCreateCvAsync(IFormFile file, string userId)
+    public async Task<CvDto> UploadAndCreateCvAsync(IFormFile file, string userId)
+    {
+        if (file == null || file.Length == 0)
         {
-            if (file == null || file.Length == 0)
-            {
-                throw new ValidationException("Lütfen yüklenecek bir dosya seçin.");
-            }
-
-
-            var uploadsFolderPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "cvs");
-
-            if (!Directory.Exists(uploadsFolderPath))
-            {
-                Directory.CreateDirectory(uploadsFolderPath);
-            }
-
-            var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-            var fullPath = Path.Combine(uploadsFolderPath, uniqueFileName);
-
-            using (var stream = new FileStream(fullPath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-
-            var cvEntity = new CV
-            {
-                Id = Guid.NewGuid(),
-                FileName = file.FileName, 
-                FilePath = Path.Combine("uploads", "cvs", uniqueFileName),
-
-                UploadDate = DateTime.UtcNow,
-                UserId = userId,
-                ExtractedText = "Metin çıkarma işlemi burada yapılmalı" 
-            };
-
-            await _cvRepository.AddAsync(cvEntity);
-
-            return new CvDto
-            {
-                Id = cvEntity.Id,
-                FileName = cvEntity.FileName,
-                UploadDate = cvEntity.UploadDate,
-                UserId = cvEntity.UserId
-            };
+            throw new ValidationException("Lütfen yüklenecek bir dosya seçin.");
         }
+
+
+        var uploadsFolderPath = Path.Combine("PrivateFiles", "uploads", "cvs");
+
+        if (!Directory.Exists(uploadsFolderPath))
+        {
+            Directory.CreateDirectory(uploadsFolderPath);
+        }
+
+        var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        var fullPath = Path.Combine(uploadsFolderPath, uniqueFileName);
+
+        using (var stream = new FileStream(fullPath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+
+        var cvEntity = new CV
+        {
+            Id = Guid.NewGuid(),
+            FileName = file.FileName, 
+            FilePath = Path.Combine("PrivateFiles", "cvs", uniqueFileName),
+            UploadDate = DateTime.UtcNow,
+            UserId = userId,
+            ExtractedText = "Metin çıkarma işlemi burada yapılmalı" 
+        };
+
+        await _cvRepository.AddAsync(cvEntity);
+
+        return new CvDto
+        {
+            Id = cvEntity.Id,
+            FileName = cvEntity.FileName,
+            UploadDate = cvEntity.UploadDate,
+            UserId = cvEntity.UserId
+        };
+    }
 }

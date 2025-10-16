@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Interviu.Entity\Interviu.Entity.csproj" />
+    </ItemGroup>
+
 </Project>
