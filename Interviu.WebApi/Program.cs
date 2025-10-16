@@ -24,6 +24,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICvService, CvService>();
+builder.Services.AddScoped<ICVRepository, CVRepository>();
 // AutoMapper
 builder.Services.AddAutoMapper(cfg =>
 {
@@ -87,6 +89,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 // CORS
 app.UseCors("AllowAll");

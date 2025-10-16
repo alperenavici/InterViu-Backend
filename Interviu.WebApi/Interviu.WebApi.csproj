@@ -22,4 +22,8 @@
       <ProjectReference Include="..\Interviu.Service\Interviu.Service.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="wwwroot\uploads\cvs\" />
+    </ItemGroup>
+
 </Project>

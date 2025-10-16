@@ -415,3 +415,4 @@ docker-compose*.yml
 # Application specific
 wwwroot/dist/
 wwwroot/lib/
+wwwroot/uploads/cvs(
