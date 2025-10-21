@@ -51,7 +51,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
      .AddEntityFrameworkStores<ApplicationDbContext>()
-        .AddDefaultTokenProviders();
+        .AddDefaultTokenProviders(); 
 
 // JWT Authentication
 var jwtSection = builder.Configuration.GetSection("Jwt");
@@ -85,10 +85,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-  
-}
+
+
 
 app.UseHttpsRedirection();
 
@@ -100,9 +98,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 // Ana sayfa
-app.MapGet("/", () => Results.Text(@"
-INTERVIU API BAŞLATILDI          
-", "text/plain; charset=utf-16"));
+app.MapGet("/", () => "INTERVIU API BAŞLATILDI ✅");
+
 
 
 

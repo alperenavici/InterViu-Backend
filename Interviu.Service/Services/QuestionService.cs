@@ -44,8 +44,8 @@ public class QuestionService: IQuestionService
 
     public async Task<QuestionDto> CreateQuestionAsync(CreateQuestionDto dto)
     {
-        var existingQuestion = await _questionRepository.FindAsync(q => q.Text.ToLower() == dto.Text.ToLower());
-        if (existingQuestion != null)
+        var existingQuestions = await _questionRepository.FindAsync(q => q.Text.ToLower() == dto.Text.ToLower());
+        if (existingQuestions != null && existingQuestions.Any())
         {
             throw new ValidationException("Soru zaten mevcut");
         }
@@ -59,6 +59,7 @@ public class QuestionService: IQuestionService
         };
         
         await _questionRepository.AddAsync(newQuestion);
+        await _questionRepository.SaveChangesAsync();
         return _mapper.Map<QuestionDto>(newQuestion);
 
 
@@ -85,7 +86,7 @@ public class QuestionService: IQuestionService
         }
 
         _questionRepository.Update(questionToUpdate);
-
+        await _questionRepository.SaveChangesAsync();
     }
 
     public async Task DeleteQuestionAsync(Guid id)
@@ -96,6 +97,7 @@ public class QuestionService: IQuestionService
             throw new EntryPointNotFoundException($"Question with id {id} was not found");
         }
         _questionRepository.Remove(questionToDelete);
+        await _questionRepository.SaveChangesAsync();
     }
 
     public async Task<IEnumerable<QuestionDto>> GetRandomQuestionsAsync(int count, string? category = null)

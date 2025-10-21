@@ -18,6 +18,10 @@ namespace Interviu.Service.Mappings
                 .ForMember(dest => dest.Cvs, opt => opt.MapFrom(src => src.Cvs));
             
             CreateMap<CV, CvDto>();
+                        
+            // Question mappings
+            CreateMap<Question, QuestionDto>();
+            CreateMap<CreateQuestionDto, Question>();
         }
     }
 }
