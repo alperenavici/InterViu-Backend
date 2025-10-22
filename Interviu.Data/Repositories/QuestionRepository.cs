@@ -21,7 +21,9 @@ public class QuestionRepository : GenericRepository<Question>, IQuestionReposito
 
     public async Task<IEnumerable<Question>> GetAllQuestionByDifficultyAsync(Difficulty difficulty)
     {
-        throw new NotImplementedException();
+        return await _dbcontext.Questions
+            .Where(qu => qu.Difficulty == difficulty)
+            .ToListAsync();
     }
 
     public async Task<List<Question>> GetRandomQuestionsAsync(int count, string? category = null)
