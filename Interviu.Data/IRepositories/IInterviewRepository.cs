@@ -9,5 +9,5 @@ public interface IInterviewRepository:IGenericRepository<Interview>
     Task<IEnumerable<Interview>>GetInterviewsByUserIdAsync(string userId);
     Task<IEnumerable<Interview>> GetInterviewsByStatusAsync(InterviewStatus status);
     Task<IEnumerable<Interview>> GetInterviewsByCvAsync(Guid cvId);
-    
+
 }

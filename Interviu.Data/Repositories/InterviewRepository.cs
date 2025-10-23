@@ -8,8 +8,6 @@ namespace Interviu.Data.Repositories;
 
 public class InterviewRepository : GenericRepository<Interview>, IInterviewRepository
 {
-    private IInterviewRepository _interviewRepositoryImplementation;
-
     public InterviewRepository(ApplicationDbContext dbcontext) : base(dbcontext)
     {
     }
@@ -50,6 +48,6 @@ public class InterviewRepository : GenericRepository<Interview>, IInterviewRepos
         return await _dbcontext.Interviews
             .Where(i=>i.CvId==cvId)
             .ToListAsync();
-        
     }
+    
 }
