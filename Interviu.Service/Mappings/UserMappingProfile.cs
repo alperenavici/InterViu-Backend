@@ -22,6 +22,13 @@ namespace Interviu.Service.Mappings
             // Question mappings
             CreateMap<Question, QuestionDto>();
             CreateMap<CreateQuestionDto, Question>();
+            
+            // Interview mappings
+            CreateMap<Interview, InterviewDto>()
+                .ForMember(dest => dest.Questions, opt => opt.MapFrom(src => src.InterviewQuestions))
+                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
+                .ForMember(dest => dest.Cv, opt => opt.MapFrom(src => src.Cv));
+            CreateMap<InterviewQuestion, InterviewQuestionDto>();
         }
     }
 }

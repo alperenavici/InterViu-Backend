@@ -29,10 +29,13 @@ builder.Services.AddScoped<ICvService, CvService>();
 builder.Services.AddScoped<ICVRepository, CVRepository>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+builder.Services.AddScoped<IInterviewService, InterviewService>();
+builder.Services.AddScoped<IInterviewRepository, InterviewRepository>();
 // AutoMapper
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<UserMappingProfile>();
+    cfg.AddProfile<MappingProfile>();
 });
 
 // CORS (Frontend için)

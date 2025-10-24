@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Interviu.Data.IRepositories;
 using Interviu.Service.IServices;
 using AutoMapper;
+using Interviu.Core.DTOs;
 using Microsoft.AspNetCore.Hosting;
 using Interviu.Entity.Entities;
 using Microsoft.AspNetCore.Http;
@@ -34,9 +35,9 @@ public class CvService:ICvService
     public  async Task<IEnumerable<CvDto>> GetCvsForUserAsync(string userId)
     {
         var cvEntity = await _cvRepository.GetByCvsByUserIdAsync(userId);
-        if (cvEntity == null)
+        if (cvEntity == null || !cvEntity.Any())
         {
-            throw new EntryPointNotFoundException("User not found");
+            throw new EntryPointNotFoundException("No CVs found for this user");
         }
         return _mapper.Map<IEnumerable<CvDto>>(cvEntity);
     }
@@ -76,11 +77,14 @@ public class CvService:ICvService
         };
 
         await _cvRepository.AddAsync(cvEntity);
+        await _cvRepository.SaveChangesAsync();
 
         return new CvDto
         {
             Id = cvEntity.Id,
             FileName = cvEntity.FileName,
+            FilePath = cvEntity.FilePath,
+            ExtractedText = cvEntity.ExtractedText,
             UploadDate = cvEntity.UploadDate,
             UserId = cvEntity.UserId
         };

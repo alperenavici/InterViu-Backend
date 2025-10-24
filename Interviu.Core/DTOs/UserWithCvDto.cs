@@ -8,9 +8,3 @@ public class UserWithCvDto
     public ICollection<CvDto> Cvs { get; set; } = new List<CvDto>();
 }
 
-public class CvDto
-{
-    public Guid Id { get; set; }
-    public string FileName { get; set; }
-    public DateTime UploadDate { get; set; }
-}

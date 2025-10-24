@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using AutoMapper;
+using Interviu.Core.DTOs;
 using Interviu.Entity.Entities;
 using Interviu.Service.IServices;
 using Microsoft.AspNetCore.Authorization;

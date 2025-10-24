@@ -10,9 +10,8 @@ public class InterviewQuestion //ara tablo
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; } 
 
-    [Required]
     [Column(TypeName = "text")]
-    public string AnswerText { get; set; }
+    public string? AnswerText { get; set; }
 
     public float? Score { get; set; }
 

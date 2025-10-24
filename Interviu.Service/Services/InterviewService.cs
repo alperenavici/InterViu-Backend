@@ -15,18 +15,30 @@ public class InterviewService: IInterviewService
     private readonly IMapper _mapper;
     private readonly ILogger<InterviewService> _logger;
     private readonly IQuestionRepository _questionRepository;
+    private readonly ICVRepository _cvRepository;
 
-    public InterviewService(IMapper mapper, IInterviewRepository interviewRepository, IQuestionRepository questionRepository,ILogger<InterviewService> logger)
+    public InterviewService(IMapper mapper, IInterviewRepository interviewRepository, IQuestionRepository questionRepository, ICVRepository cvRepository, ILogger<InterviewService> logger)
     {
         _mapper = mapper;
         _interviewRepository = interviewRepository;
         _logger = logger;
         _questionRepository = questionRepository;
+        _cvRepository = cvRepository;
     }
 
 
     public async Task<InterviewDto> StartInterviewAsync(StartInterviewDto dto)
     { 
+        // CV validation - eğer CvId verilmişse, CV'nin var olduğunu kontrol et
+        if (dto.CvId.HasValue)
+        {
+            var cv = await _cvRepository.GetByIdAsync(dto.CvId.Value);
+            if (cv == null)
+            {
+                throw new Exception($"CV with ID {dto.CvId.Value} not found");
+            }
+        }
+
         var randomQuestions=await _questionRepository.GetRandomQuestionsAsync(dto.QuestionCount,dto.Category);
         if (!randomQuestions.Any())
         {
@@ -44,7 +56,7 @@ public class InterviewService: IInterviewService
             InterviewQuestions = randomQuestions.Select(q => new InterviewQuestion
             {
                 QuestionId = q.Id,
-                AnswerText = "" 
+                AnswerText = null 
             }).ToList()
 
         };
