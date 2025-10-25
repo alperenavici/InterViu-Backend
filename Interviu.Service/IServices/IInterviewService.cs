@@ -2,6 +2,7 @@ using Interviu.Core.DTOs;
 using Interviu.Data.IRepositories;
 using Interviu.Entity.Entities;
 using Interviu.Entity.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace Interviu.Service.IServices;
 
@@ -32,4 +33,5 @@ public interface IInterviewService
     /// Belirtilen kullanıcıya ait tüm mülakatların özet listesini getirir.
     /// </summary>
     Task<IEnumerable<InterviewSummaryDto>> GetInterviewsForUserAsync(string userId);
+    
 }

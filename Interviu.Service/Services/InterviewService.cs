@@ -1,10 +1,13 @@
+using System.Text.Json;
 using AutoMapper;
 using Interviu.Core.DTOs;
 using Interviu.Data.IRepositories;
+using Interviu.Data.UnitOfWork;
 using Interviu.Entity.Entities;
 using Interviu.Entity.Enums;
 using Interviu.Service.Exceptions;
 using Interviu.Service.IServices;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace Interviu.Service.Services;
@@ -16,16 +19,30 @@ public class InterviewService: IInterviewService
     private readonly ILogger<InterviewService> _logger;
     private readonly IQuestionRepository _questionRepository;
     private readonly ICVRepository _cvRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly ICvService _cvService;
 
-    public InterviewService(IMapper mapper, IInterviewRepository interviewRepository, IQuestionRepository questionRepository, ICVRepository cvRepository, ILogger<InterviewService> logger)
+    public InterviewService(IMapper mapper,ICvService cvService, IUnitOfWork unitOfWork,IInterviewRepository interviewRepository, IQuestionRepository questionRepository, ICVRepository cvRepository, ILogger<InterviewService> logger)
     {
         _mapper = mapper;
         _interviewRepository = interviewRepository;
         _logger = logger;
         _questionRepository = questionRepository;
         _cvRepository = cvRepository;
+        _unitOfWork = unitOfWork;
+        _cvService = cvService;
     }
 
+    public async Task<InterviewDto> StartInterviewCvAsync(IFormFile cvFile, StartInterviewDto dto)
+    {
+        string rawCvText = await _cvService.ExtractTextAsync(cvFile);
+        // string prompt = CreateGeminiPromptForInterview(rawCvText, dto.Position);
+        throw  new NotImplementedException();
+        //buraya gemini tarafı gelicek ileride
+
+    }
+
+    
 
     public async Task<InterviewDto> StartInterviewAsync(StartInterviewDto dto)
     { 
@@ -61,7 +78,7 @@ public class InterviewService: IInterviewService
 
         };
         await _interviewRepository.AddAsync(newInterview);
-        await _interviewRepository.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
         var createdInterviewWithDetails = await _interviewRepository.GetInterviewWithDetailAsync(newInterview.Id);
         return _mapper.Map<InterviewDto>(createdInterviewWithDetails);
     }
@@ -84,7 +101,7 @@ public class InterviewService: IInterviewService
         }
         questionToAnswer.AnswerText = dto.AnswerText;
         _interviewRepository.Update(interview);
-        await _interviewRepository.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task CompleteInterviewAsync(Guid interviewId, float overallScore, string overallFeedback)

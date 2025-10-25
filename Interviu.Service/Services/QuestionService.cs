@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using Interviu.Core.DTOs;
 using Interviu.Data.IRepositories;
+using Interviu.Data.UnitOfWork;
 using Interviu.Entity.Entities;
 using Interviu.Service.IServices;
 using Microsoft.Extensions.Logging;
@@ -13,12 +14,14 @@ public class QuestionService: IQuestionService
     private readonly IQuestionRepository _questionRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<QuestionService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public QuestionService(IMapper mapper, IQuestionRepository questionRepository, ILogger<QuestionService> logger)
+    public QuestionService(IMapper mapper, IQuestionRepository questionRepository, ILogger<QuestionService> logger,IUnitOfWork unitOfWork)
     {
         _mapper = mapper;
         _questionRepository = questionRepository;
         _logger = logger;
+        _unitOfWork = unitOfWork;
     }
 
 
@@ -59,7 +62,7 @@ public class QuestionService: IQuestionService
         };
         
         await _questionRepository.AddAsync(newQuestion);
-        await _questionRepository.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
         return _mapper.Map<QuestionDto>(newQuestion);
 
 
@@ -86,7 +89,7 @@ public class QuestionService: IQuestionService
         }
 
         _questionRepository.Update(questionToUpdate);
-        await _questionRepository.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteQuestionAsync(Guid id)
@@ -97,7 +100,7 @@ public class QuestionService: IQuestionService
             throw new EntryPointNotFoundException($"Question with id {id} was not found");
         }
         _questionRepository.Remove(questionToDelete);
-        await _questionRepository.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task<IEnumerable<QuestionDto>> GetRandomQuestionsAsync(int count, string? category = null)

@@ -108,6 +108,53 @@ public class CvController:ControllerBase
             
         }
     }
+    
+    /// <summary>
+    /// Yüklenen bir CV dosyasından (PDF veya DOCX) ham metin içeriğini çıkarır.
+    /// </summary>
+    /// <param name="file">İşlenecek dosya (form-data).</param>
+    /// <returns>Dosyadan çıkarılan metin.</returns>
+    /// <response code="200">Metin başarıyla çıkarıldı.</response>
+    /// <response code="400">Geçersiz dosya formatı veya boş dosya.</response>
+    /// <response code="500">Sunucu taraflı bir işleme hatası (örn. IronPdf lisans hatası).</response>
+    [HttpPost("extract-text")]
+    [ProducesResponseType(typeof(TextExtractionResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ExtractText(IFormFile file)
+    {
+        try
+        {
+            // Servisi çağır ve metni al
+            var extractedText = await _cvService.ExtractTextAsync(file);
+
+            // Sonucu yapılandırılmış bir JSON olarak döndür
+            return Ok(new TextExtractionResult
+            {
+                FileName = file.FileName,
+                ExtractedText = extractedText,
+                CharacterCount = extractedText.Length
+            });
+        }
+        catch (ValidationException ex)
+        {
+            // Kullanıcı kaynaklı hatalar (yanlış dosya formatı vb.) için 400 Bad Request döndür.
+            return BadRequest(new { Message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            // Beklenmedik sunucu hataları için loglama yap ve 500 döndür.
+            _logger.LogError(ex, "CV metin çıkarma işlemi sırasında bir hata oluştu. Dosya: {FileName}", file?.FileName);
+            return StatusCode(500, new { Message = "Dosya işlenirken bir sunucu hatası oluştu.", Details = ex.Message });
+        }
+    }
+    public class TextExtractionResult
+    {
+        public string FileName { get; set; }
+        public int CharacterCount { get; set; }
+        public string ExtractedText { get; set; }
+    }
+
 
     [HttpGet("user/{userId}")]
     [Authorize(Roles = "Admin")]
