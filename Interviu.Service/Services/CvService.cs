@@ -3,6 +3,7 @@ using Interviu.Data.IRepositories;
 using Interviu.Service.IServices;
 using AutoMapper;
 using Interviu.Core.DTOs;
+using Interviu.Data.UnitOfWork;
 using Microsoft.AspNetCore.Hosting;
 using Interviu.Entity.Entities;
 using Microsoft.AspNetCore.Http;
@@ -13,12 +14,14 @@ public class CvService:ICvService
 {
     private readonly   IMapper _mapper;
     private readonly ICVRepository  _cvRepository;
-    private readonly IWebHostEnvironment _webHostEnvironment;     
-    public CvService(IMapper mapper, ICVRepository cvRepository,IWebHostEnvironment webHostEnvironment)
+    private readonly IWebHostEnvironment _webHostEnvironment;  
+    private readonly IUnitOfWork _unitOfWork;
+    public CvService(IMapper mapper,IUnitOfWork unitOfWork, ICVRepository cvRepository,IWebHostEnvironment webHostEnvironment)
     {
         _mapper = mapper;
         _cvRepository = cvRepository;
         _webHostEnvironment = webHostEnvironment;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<IEnumerable<CvDto>> GetAllAsync()
@@ -77,7 +80,7 @@ public class CvService:ICvService
         };
 
         await _cvRepository.AddAsync(cvEntity);
-        await _cvRepository.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
 
         return new CvDto
         {

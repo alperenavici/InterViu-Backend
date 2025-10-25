@@ -3,6 +3,7 @@ using Interviu.Data.IRepositories;
 using Interviu.Service.IServices;
 using System.ComponentModel.DataAnnotations;
 using AutoMapper;
+using Interviu.Data.UnitOfWork;
 using Interviu.Entity.Entities;
 using Interviu.Service.Exceptions;
 

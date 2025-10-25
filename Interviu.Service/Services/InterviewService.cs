@@ -1,6 +1,7 @@
 using AutoMapper;
 using Interviu.Core.DTOs;
 using Interviu.Data.IRepositories;
+using Interviu.Data.UnitOfWork;
 using Interviu.Entity.Entities;
 using Interviu.Entity.Enums;
 using Interviu.Service.Exceptions;
@@ -16,14 +17,16 @@ public class InterviewService: IInterviewService
     private readonly ILogger<InterviewService> _logger;
     private readonly IQuestionRepository _questionRepository;
     private readonly ICVRepository _cvRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public InterviewService(IMapper mapper, IInterviewRepository interviewRepository, IQuestionRepository questionRepository, ICVRepository cvRepository, ILogger<InterviewService> logger)
+    public InterviewService(IMapper mapper, IUnitOfWork unitOfWork,IInterviewRepository interviewRepository, IQuestionRepository questionRepository, ICVRepository cvRepository, ILogger<InterviewService> logger)
     {
         _mapper = mapper;
         _interviewRepository = interviewRepository;
         _logger = logger;
         _questionRepository = questionRepository;
         _cvRepository = cvRepository;
+        _unitOfWork = unitOfWork;
     }
 
 
@@ -61,7 +64,7 @@ public class InterviewService: IInterviewService
 
         };
         await _interviewRepository.AddAsync(newInterview);
-        await _interviewRepository.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
         var createdInterviewWithDetails = await _interviewRepository.GetInterviewWithDetailAsync(newInterview.Id);
         return _mapper.Map<InterviewDto>(createdInterviewWithDetails);
     }
@@ -84,7 +87,7 @@ public class InterviewService: IInterviewService
         }
         questionToAnswer.AnswerText = dto.AnswerText;
         _interviewRepository.Update(interview);
-        await _interviewRepository.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task CompleteInterviewAsync(Guid interviewId, float overallScore, string overallFeedback)
