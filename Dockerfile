@@ -24,5 +24,4 @@ COPY --from=build /app/out .
 
 EXPOSE 80
 
-# Ana proje DLL'ini belirtin (Web API/MVC projesi)
 ENTRYPOINT ["dotnet", "Interviu.WebApi.dll"]
