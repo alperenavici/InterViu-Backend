@@ -390,11 +390,5 @@ This project is proprietary and confidential.
 
 ---
 
-## 📞 Support
 
-For support, please open an issue in the repository or contact the development team.
-
----
-
-**Made with ❤️ using .NET 8**
 
