@@ -1,6 +1,6 @@
 using Interviu.Core.DTOs;
 using System.Threading.Tasks;
-using Interviu.Core.DTOs;
+
 namespace Interviu.Service.IServices;
 
 public interface IUserService

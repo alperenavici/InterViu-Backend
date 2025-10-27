@@ -41,6 +41,50 @@ public class InterviewsController:ControllerBase
             return BadRequest(new { Message = ex.Message });
         }
     }
+
+    /// <summary>
+    /// CV dosyası yükleyerek Gemini AI ile otomatik soru üretimi yaparak mülakat başlatır.
+    /// </summary>
+    /// <remarks>
+    /// CV dosyası (PDF/DOCX) yüklenir ve Gemini AI pozisyona uygun sorular üretir.
+    /// UserId otomatik olarak giriş yapmış kullanıcıdan (Admin) alınır.
+    /// </remarks>
+    [HttpPost("start-with-cv")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> StartInterviewWithCv([FromForm] IFormFile cvFile, [FromForm] string position, [FromForm] int questionCount = 10)
+    {
+        try
+        {
+            // Giriş yapmış kullanıcının ID'sini token'dan al
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { Message = "Kullanıcı kimliği doğrulanamadı" });
+            }
+
+            if (cvFile == null || cvFile.Length == 0)
+            {
+                return BadRequest(new { Message = "CV dosyası gereklidir" });
+            }
+
+            var dto = new StartInterviewDto
+            {
+                Position = position,
+                UserId = userId,
+                QuestionCount = questionCount
+            };
+
+            _logger.LogInformation("Admin {AdminId} tarafından {Position} pozisyonu için CV ile mülakat başlatılıyor", userId, position);
+
+            var createdInterview = await _interviewService.StartInterviewCvAsync(cvFile, dto);
+            return CreatedAtAction(nameof(GetInterviewDetails), new { interviewId = createdInterview.Id }, createdInterview);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "CV ile mülakat başlatılırken bir hata oluştu.");
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
     /// <summary>
     /// Bir mülakattaki belirli bir soruya cevap gönderir.
     /// </summary>

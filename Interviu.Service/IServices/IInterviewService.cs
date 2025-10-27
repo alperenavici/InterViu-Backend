@@ -34,4 +34,11 @@ public interface IInterviewService
     /// </summary>
     Task<IEnumerable<InterviewSummaryDto>> GetInterviewsForUserAsync(string userId);
     
+    /// <summary>
+    /// CV dosyası yükleyerek Gemini AI ile otomatik soru üretimi yaparak mülakat başlatır.
+    /// </summary>
+    /// <param name="cvFile">Yüklenen CV dosyası</param>
+    /// <param name="dto">Mülakat başlatma bilgileri</param>
+    /// <returns>Başlatılan mülakatın detaylarını içeren DTO</returns>
+    Task<InterviewDto> StartInterviewCvAsync(IFormFile cvFile, StartInterviewDto dto);
 }

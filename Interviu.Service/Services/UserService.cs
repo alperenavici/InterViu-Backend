@@ -20,12 +20,12 @@ namespace Interviu.Service.Services
             _mapper = mapper;
         }
 
-        public async Task<UserDto> GetUserByIdAsync(string id)
+        public async Task<UserDto?> GetUserByIdAsync(string id)
         {
             var userEntity = await _userRepository.GetUserByIdAsync(id);
             if (userEntity == null)
             {
-                throw new EntityNotFoundException("ApplicationUser", id);
+                return null;
             }
             return _mapper.Map<UserDto>(userEntity);
         }
