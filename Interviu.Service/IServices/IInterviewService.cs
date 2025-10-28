@@ -41,4 +41,17 @@ public interface IInterviewService
     /// <param name="dto">Mülakat başlatma bilgileri</param>
     /// <returns>Başlatılan mülakatın detaylarını içeren DTO</returns>
     Task<InterviewDto> StartInterviewCvAsync(IFormFile cvFile, StartInterviewDto dto);
+    
+    /// <summary>
+    /// Bir mülakattaki soruya verilen sesli cevabı işler, metne çevirir ve kaydeder.
+    /// </summary>
+    /// <returns>Metne çevrilmiş cevap.</returns>
+    Task<string> SubmitAudioAnswerAsync(Guid interviewId, Guid questionId, IFormFile audioFile);
+    
+    /// <summary>
+    /// Tamamlanmış bir mülakatın tüm soru-cevaplarını Gemini'ye göndererek analiz eder
+    /// ve sonuçları kaydeder.
+    /// </summary>
+    /// <returns>Analiz sonucunu içeren DTO.</returns>
+    Task<InterviewAnalysisDto> AnalyzeAndCompleteInterviewAsync(Guid interviewId);
 }

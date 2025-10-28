@@ -12,5 +12,12 @@ public interface IGeminiService
     /// <param name="questionCount">Oluşturulacak soru sayısı</param>
     /// <returns>Oluşturulan soruların listesi</returns>
     Task<List<GeneratedQuestionDto>> GenerateInterviewQuestionsAsync(string cvText, string position, int questionCount = 10);
+    
+    /// <summary>
+    /// Gemini AI'ya genel bir prompt göndererek içerik üretir.
+    /// </summary>
+    /// <param name="prompt">Gemini AI'ya gönderilecek prompt</param>
+    /// <returns>Gemini AI'dan dönen yanıt metni</returns>
+    Task<string> GenerateContentAsync(string prompt);
 }
 

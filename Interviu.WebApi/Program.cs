@@ -34,6 +34,7 @@ builder.Services.AddScoped<IInterviewService, InterviewService>();
 builder.Services.AddScoped<IInterviewRepository, InterviewRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IGeminiService, GeminiService>();
+builder.Services.AddHttpClient<ISpeechRecognitionService, SpeechRecognitionService>();
 // AutoMapper
 builder.Services.AddAutoMapper(cfg =>
 {

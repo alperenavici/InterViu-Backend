@@ -114,5 +114,46 @@ public class GeminiService : IGeminiService
             throw new Exception("Gemini yanıtı işlenemedi", ex);
         }
     }
+    
+    public async Task<string> GenerateContentAsync(string prompt)
+    {
+        try
+        {
+            _logger.LogInformation("Gemini AI'ya prompt gönderiliyor...");
+
+            // Gemini API client oluştur
+            var googleAI = new GoogleAI(_apiKey);
+            var model = googleAI.GenerativeModel(model: _modelId);
+
+            // Generation config
+            var generationConfig = new GenerationConfig
+            {
+                Temperature = 0.7f,
+                MaxOutputTokens = 8192,
+                TopP = 0.95f
+            };
+
+            // API çağrısı
+            var response = await model.GenerateContent(
+                prompt,
+                generationConfig: generationConfig
+            );
+
+            // Response'u kontrol et
+            if (response == null || string.IsNullOrEmpty(response.Text))
+            {
+                _logger.LogError("Gemini API'den boş yanıt alındı");
+                throw new Exception("Gemini API'den yanıt alınamadı");
+            }
+
+            _logger.LogInformation("Gemini yanıtı başarıyla alındı");
+            return response.Text;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Gemini AI ile içerik oluşturulurken hata oluştu");
+            throw;
+        }
+    }
 }
 
