@@ -117,7 +117,7 @@ public class InterviewService: IInterviewService
 
     public async Task<string> SubmitAudioAnswerAsync(Guid interviewId, Guid questionId, IFormFile audioFile)
     {
-        _logger.LogInformation("Sesli cevap işleniyor. Mülakat:{InterviewId}, QuestionId: {QuestionId}");
+        _logger.LogInformation("Sesli cevap işleniyor. Mülakat:{InterviewId}, QuestionId: {QuestionId}", interviewId, questionId);
         string transcribedText = null;
         using(var audioStream=audioFile.OpenReadStream())
         {

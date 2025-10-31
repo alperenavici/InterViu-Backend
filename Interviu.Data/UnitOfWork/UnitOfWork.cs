@@ -2,6 +2,8 @@ using System.Collections;
 using Interviu.Data.Context;
 using Interviu.Data.IRepositories;
 using Interviu.Data.Repositories;
+using Interviu.Entity.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace Interviu.Data.UnitOfWork;
 
@@ -9,15 +11,14 @@ public class UnitOfWork: IUnitOfWork
 {
     private readonly ApplicationDbContext _dbContext;
     private Hashtable _repositories;
-    
-    private IQuestionRepository  questionRepository;
-    private IUserRepository  userRepository;
-    private IInterviewRepository interviewRepository;
-    private ICVRepository cvRepository;
 
-    public UnitOfWork(ApplicationDbContext dbContext)
+    public UnitOfWork(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager)
     {
         _dbContext = dbContext;
+        Users = new UserRepository(userManager, dbContext);
+        Interviews = new InterviewRepository(dbContext);
+        Questions = new QuestionRepository(dbContext);
+        CVs = new CVRepository(dbContext);
     }
 
 
